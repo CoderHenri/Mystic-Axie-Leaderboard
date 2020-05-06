@@ -1,0 +1,40 @@
+#webpage{
+    background-color: #36393E;
+  }
+
+#FixedBoxFixer {
+  height: 10px;
+}
+
+#Entwickler {
+  position: fixed;
+  left: 10px;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(255, 255, 255);
+}
+
+#Donation {
+  right: 10px;
+  position: fixed;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(255, 255, 255);
+}
+
+#Headline {
+  font-size: 75px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #00008B;
+  text-shadow:
+    -2px -2px 0 #FF8C00,
+    0   -2px 0 #FF8C00,
+    2px -2px 0 #FF8C00,
+    2px  0   0 #FF8C00,
+    2px  2px 0 #FF8C00,
+    0    2px 0 #FF8C00,
+    -2px  2px 0 #FF8C00,
+    -2px  0   0 #FF8C00;
+  text-align: center;
+  margin-top: 0px;
+}
