@@ -38,3 +38,83 @@
   text-align: center;
   margin-top: 0px;
 }
+
+#LandRankingBox {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    width: 1000px;
+    height: auto;
+    position: relative;
+    display: grid;
+    grid-template-columns: 500px 500px;
+}
+
+  
+.RankingName {
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #FF8C00;
+    text-decoration: underline;
+    text-align: center;
+}
+
+
+.ListClass{
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #FF8C00;
+    text-align: center;
+    margin-top: 0px;
+}
+  
+.LL {
+    display: inline-block;
+    text-align: left;
+    position: relative;
+    left: 10px;
+}
+  
+
+/*Loader*/
+#lds-hourglass {
+    margin-left: 50%;
+    margin-right: 50%;
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    left: -65px;
+    bottom: 20px;
+}
+
+#lds-hourglass:after {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  width: 0;
+  height: 0;
+  margin: 8px;
+  box-sizing: border-box;
+  border: 48px solid #FF8C00;
+  border-color: #FF8C00 transparent #FF8C00 transparent;
+  animation: lds-hourglass 1.2s infinite;
+}
+@keyframes lds-hourglass {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(900deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(1800deg);
+  }
+}
+
+.ClassChart {
+  position: relative;
+  top: 15px;
+}
