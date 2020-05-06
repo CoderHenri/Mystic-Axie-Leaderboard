@@ -25,17 +25,52 @@ function AsyncTextReader() {
     });
 }
 
-var MysticsOwners = [];
+var MysticArrayOwners = [];
+var RareClassMysticArrayOwners = [];
 
-function GetMysticAxies() {
+async function GetMysticAxies() {
       
-      var AllMysticsURL = "https://axieinfinity.com/api/v2/axies?mystic=true&offset=12&sorting=lowest_id";
-      getAxiePrice(AllMysticsURL);
-      
-    async function getAxiePrice(url) {
-      const resp = await fetch(url);
-      const data = await resp.json()
-      var AllMystics = data.totalAxies;
-      console.log(AllMystics);
+    var OffsetNumber = 0;
+    var AllMysticsURL = "https://axieinfinity.com/api/v2/axies?mystic=true&offset="+OffsetNumber+"&sorting=lowest_id";
+    var OffsetAmount = 0;
+    await getAmountMystics(AllMysticsURL);
+    
+    async function getAmountMystics(url) {
+        const resp = await fetch(url);
+        const data = await resp.json()
+        OffsetAmount = data.totalAxies;
+        OffsetAmount = Math.floor(OffsetAmount/12);
+    }
+
+
+
+    for(i=0; i < OffsetAmount; i++) {
+        console.log("i= " + i);
+        OffsetNumber = OffsetNumber + 12
+        AllMysticsURL = "https://axieinfinity.com/api/v2/axies?mystic=true&offset="+OffsetNumber+"&sorting=lowest_id";
+        console.log(OffsetNumber);
+        await GetMysticOwners(AllMysticsURL);
+        if(i == (OffsetAmount - 1)) {
+            console.log(MysticArrayOwners);
+            console.log(RareClassMysticArrayOwners);
+        }
+    }
+}
+
+async function GetMysticOwners(url) {
+    
+    const resp = await fetch(url);
+    const data = await resp.json()
+    for(m=0; m < 12; m++) {
+        try {
+            var MysticID = data.axies[m].id;
+            var MysticOwner = data.axies[m].owner;
+            var MysticClass = data.axies[m].class;
+            MysticArrayOwners.push({Owner : MysticOwner, ID : MysticID});
+            console.log(MysticID + " IDDDDDDD");
+            if(MysticClass == "bird" || MysticClass == "reptile" || MysticClass == "bug") {
+                RareClassMysticArrayOwners.push({RareClassOwner : MysticOwner, RareClassID : MysticID})
+            }
+        } catch { continue; }
     }
 }
