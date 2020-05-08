@@ -25,116 +25,108 @@ function AsyncTextReader() {
     });
 }
 
-var MysticArrayOwners = [];
-var RareClassMysticArrayOwners = [];
-
 async function GetMysticAxies() {
-      
-    var OffsetNumber = 0;
-    var AllMysticsURL = "https://axieinfinity.com/api/v2/axies?mystic=true&offset="+OffsetNumber+"&sorting=lowest_id";
-    var OffsetAmount = 0;
-    await getAmountMystics(AllMysticsURL);
+
+  var MysticArray = [];
+
+  var url = "https://axieinfinity.com/graphql-server/graphql"
+
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
     
-    async function getAmountMystics(url) {
-        const resp = await fetch(url);
-        const data = await resp.json()
-        OffsetAmount = data.totalAxies;
-        OffsetAmount = Math.floor(OffsetAmount/12);
-    }
-
-
-
-    for(i=0; i < OffsetAmount; i++) {
-        console.log("i= " + i);
-        OffsetNumber = OffsetNumber + 12
-        AllMysticsURL = "https://axieinfinity.com/api/v2/axies?mystic=true&offset="+OffsetNumber+"&sorting=lowest_id";
-        console.log(OffsetNumber);
-        await GetMysticOwners(AllMysticsURL);
-    }
-    ListenSorter();
-}
-
-async function GetMysticOwners(url) {
+    body: JSON.stringify({
+      operationName:"GetAxieBriefList",
+      variables:{
+        "from":0,
+        "size":2400,
+        "sort":"IdAsc",
+        "auctionType":"All",
+        "owner":null,
+        "region":null,
+        "criteria":{
+          "parts":null,
+          "bodyShapes":null,
+          "classes":null,
+          "stages":null,
+          "numMystic":[1,2,3,4],
+          "pureness":null,
+          "title":null,
+          "breedable":null,
+          "breedCount":null,
+          "hp":[],"skill":[],"speed":[],"morale":[]
+        }
+      },
+      query:"query GetAxieBriefList($auctionType: AxieAuctionType, $region: String, $criteria: AxieCriteria, $from: Int, $sort: SortBy, $size: Int, $owner: String) {\n  axies(auctionType: $auctionType, region: $region, criteria: $criteria, from: $from, sort: $sort, size: $size, owner: $owner) {\n    total\n    results {\n      ...AxieBrief\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment AxieBrief on Axie {\n  id\n  class\n  owner\n __typename\n}\n"})
+  })
     
-    const resp = await fetch(url);
-    const data = await resp.json()
-    for(m=0; m < 12; m++) {
-        try {
-            var MysticID = data.axies[m].id;
-            var MysticOwner = data.axies[m].owner;
-            var MysticClass = data.axies[m].class;
-            MysticArrayOwners.push({OwnerETH : MysticOwner, ID : MysticID, amount : 1});
-            console.log(MysticID + " IDDDDDDD");
-            if(MysticClass == "bird" || MysticClass == "reptile" || MysticClass == "bug") {
-                RareClassMysticArrayOwners.push({RareClassOwner : MysticOwner, RareClassID : MysticID, amount : 1})
-            }
-        } catch { continue; }
-    }
+  .then(function(response) { 
+    return response.json(); 
+  })
+
+  .then(function(data) {
+    MysticArray = data;
+    console.log(MysticArray);
+    console.log(MysticArray.data.axies.results.length);
+    ArrayConverter(MysticArray);
+  });
 }
 
-function ListenSorter() {
+function ArrayConverter(Array) {
 
-    var amount = [];
-    MysticArrayOwners.sort((a,b) => b.OwnerETH - a.OwnerETH);
+  Array.data.axies.results.sort((a,b) => b.owner - a.owner);
 
-    for(p=0; MysticArrayOwners.length > p; p++) {
-        if(p > 0) {
-        if(MysticArrayOwners[p].OwnerETH == MysticArrayOwners[p-1].OwnerETH) {
-            amount[amount.length - 1].amount = amount[amount.length - 1].amount + MysticArrayOwners[p].amount;
-        } else {
-            amount.push({amount : MysticArrayOwners[p].amount, OwnerETH : MysticArrayOwners[p].OwnerETH});
-        }
-        } else {
-        amount.push({amount : MysticArrayOwners[p].amount, OwnerETH : MysticArrayOwners[p].OwnerETH});
-        }
+  var NonNestedMysticArray = [];
+  var UniqueOwnerArray = [];
+
+  var RareMystic = 0;
+
+  for(i = 0; i < Array.data.axies.results.length; i++) {
+    if(Array.data.axies.results[i].class == "Reptile" || Array.data.axies.results[i].class == "Bug" || Array.data.axies.results[i].class == "Bird") {
+      RareMystic = 1;
+    } else {
+      RareMystic = 0;
     }
+    NonNestedMysticArray.push({EthOwner : Array.data.axies.results[i].owner, Mystics : 1, RareMystics : RareMystic});
+  }
 
-    amount.sort((a,b) => b.amount - a.amount || a.OwnerETH - b.OwnerETH);
-
-    var MysticAmount = [];
-
-    RareClassMysticArrayOwners.sort((a,b) => b.RareClassOwner - a.RareClassOwner);
-
-    for(p=0; RareClassMysticArrayOwners.length > p; p++) {
-        if(p > 0) {
-        if(RareClassMysticArrayOwners[p].RareClassOwner == RareClassMysticArrayOwners[p-1].RareClassOwner) {
-            MysticAmount[MysticAmount.length - 1].amount = MysticAmount[MysticAmount.length - 1].amount + RareClassMysticArrayOwners[p].amount;
-        } else {
-            MysticAmount.push({amount : RareClassMysticArrayOwners[p].amount, OwnerETH : RareClassMysticArrayOwners[p].RareClassOwner});
-        }
-        } else {
-            MysticAmount.push({amount : RareClassMysticArrayOwners[p].amount, OwnerETH : RareClassMysticArrayOwners[p].RareClassOwner});
-        }
+  for(i = 0; i < NonNestedMysticArray.length; i++) {
+    if(i > 0) {
+      if(NonNestedMysticArray[i].EthOwner == UniqueOwnerArray[UniqueOwnerArray.length-1].EthOwner) {
+        UniqueOwnerArray[UniqueOwnerArray.length-1].Mystics = UniqueOwnerArray[UniqueOwnerArray.length-1].Mystics + NonNestedMysticArray[i].Mystics;
+        UniqueOwnerArray[UniqueOwnerArray.length-1].RareMystics = UniqueOwnerArray[UniqueOwnerArray.length-1].RareMystics + NonNestedMysticArray[i].RareMystics;
+      } else {
+        UniqueOwnerArray.push({EthOwner : NonNestedMysticArray[i].EthOwner, Mystics : NonNestedMysticArray[i].Mystics, RareMystics : NonNestedMysticArray[i].RareMystics});
+      }
+    } else {
+      UniqueOwnerArray.push({EthOwner : NonNestedMysticArray[i].EthOwner, Mystics : NonNestedMysticArray[i].Mystics, RareMystics : NonNestedMysticArray[i].RareMystics});
     }
-
-    MysticAmount.sort((a,b) => b.amount - a.amount || a.OwnerETH - b.OwnerETH);
-
-    console.log(amount);
-    console.log("bevor Profilenamer");
-    ProfileNamer(amount, MysticAmount);
+  }
+  UniqueOwnerArray.sort((a,b) => b.Mystics - a.Mystics);
+  ProfileNamer(UniqueOwnerArray);
 }
 
-async function ProfileNamer(Array, MysticArray) {
+async function ProfileNamer(Array) {
   
-    var url = "https://axieinfinity.com/graphql-server/graphql"
+  var url = "https://axieinfinity.com/graphql-server/graphql"
     
     for(z=0; Array.length > z; z++) {
-      var ethAddy = Array[z].OwnerETH;
-      ethAddy = JSON.stringify(ethAddy);
+      var ethAddy = Array[z].EthOwner;
       var FetchChecker = "NEIN";
       FetchChecker = "NEIN";
     
       for(n=0; NameArray.length > n; n++) {
-        if(NameArray[n].Eth == Array[z].OwnerETH) {
-          Array[z].OwnerETH = NameArray[n].Besitzer;
+        if(NameArray[n].Eth == Array[z].EthOwner) {
+          Array[z].EthOwner = NameArray[n].Besitzer;
           FetchChecker = "JA";
           break;
         }
       }
     
-      
       if(FetchChecker == "NEIN") {
-          console.log("sucht");
         await fetch(url, {
           method: "POST",
           headers: {
@@ -143,11 +135,11 @@ async function ProfileNamer(Array, MysticArray) {
           },
           
           body: JSON.stringify({
-            operationName:"GetProfileByEthAddress",
+            operationName:"GetProfileNameByEthAddress",
             variables:{
               ethereumAddress:ethAddy
             },
-            query:"query GetProfileByEthAddress($ethereumAddress: String!) {\n  publicProfileWithEthereumAddress(ethereumAddress: $ethereumAddress) {\n    ...Profile\n    __typename\n  }\n}\n\nfragment Profile on PublicProfile {\n  accountId\n  name\n  addresses {\n    ...Addresses\n    __typename\n  }\n  __typename\n}\n\nfragment Addresses on NetAddresses {\n  ethereum\n  tomo\n  loom\n  __typename\n}\n"})
+            query:"query GetProfileNameByEthAddress($ethereumAddress: String!) {\n  publicProfileWithEthereumAddress(ethereumAddress: $ethereumAddress) {\n    name\n    __typename\n  }\n}\n"})
         })
           
         .then(function(response) { 
@@ -160,18 +152,117 @@ async function ProfileNamer(Array, MysticArray) {
             realName = data.data.publicProfileWithEthereumAddress.name;
           }
           catch {
-            realName = "No User Profile";
+            realName = "No User Name";
           }
-          Array[z].OwnerETH = realName;
+          Array[z].EthOwner = realName;
         });
       }
+      
     }
-    
-    ETHAddressNamer(Array, MysticArray);
+  console.log(Array);
+  ListMaker(Array);
 }
 
-function ETHAddressNamer(MysticArray, RareMysticArray) {
-    console.log(MysticArray);
-    console.log(RareMysticArray);
-    
+function ListMaker(Array) {
+
+  var MysticList = Array;
+  var RareMysticList = [];
+
+  for(i = 0; i < Array.length; i++) {
+    if(Array[i].RareMystics != 0) {
+      RareMysticList.push({EthOwner : Array[i].EthOwner, Mystics : Array[i].RareMystics});
+    }
+  }
+  RareMysticList.sort((a,b) => b.Mystics - a.Mystics);
+  console.log(MysticList);
+  console.log(RareMysticList);
+
+  document.getElementById("MList").innerHTML = '<ol class="LL">' + MysticList.map(function (genesis) {
+    return '<li>' + String(genesis["Mystics"]) + " Mystics owned by " + String(genesis["EthOwner"]) + '</li>';
+  }).join('') + '</ol>';
+
+  document.getElementById("RList").innerHTML = '<ol class="LL">' + RareMysticList.map(function (genesis) {
+    return '<li>' + String(genesis["Mystics"]) + " Rare Mystics owned by " + String(genesis["EthOwner"]) + '</li>';
+  }).join('') + '</ol>';
+
+  ChartMaker(MysticList, "MChart");
+  ChartMaker(RareMysticList, "RChart");
+}
+
+function ChartMaker(Array, WhichChart) {
+
+  var RestMenge = 0;
+  for(i=9; Array.length > i; i++) {
+    RestMenge = RestMenge + Array[i].Mystics;
+  }
+
+  var GesamtMenge = 0;
+  for(i=0; Array.length > i; i++) {
+    GesamtMenge = GesamtMenge + Array[i].Mystics;
+  }
+
+  var ctx = document.getElementById(WhichChart);
+
+  var LandMenge = [Array[0].Mystics, Array[1].Mystics, Array[2].Mystics, Array[3].Mystics, Array[4].Mystics, Array[5].Mystics, Array[6].Mystics, Array[7].Mystics, Array[8].Mystics, RestMenge];
+  var LandBesitzer = [Array[0].EthOwner, Array[1].EthOwner, Array[2].EthOwner, Array[3].EthOwner, Array[4].EthOwner, Array[5].EthOwner, Array[6].EthOwner, Array[7].EthOwner, Array[8].EthOwner, "All other Players"];
+
+  var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: LandBesitzer,
+      datasets: [{
+          label: 'Axie Land',
+          data: LandMenge,
+          backgroundColor: [
+            'rgba(0,104,55, 0.25)',
+            'rgba(165,0,38, 0.25)',
+            'rgba(26,152,80, 0.25)',
+            'rgba(215,48,39, 0.25)',
+            'rgba(102,189,99, 0.25)',
+            'rgba(244,109,67, 0.25)',
+            'rgba(166,217,106, 0.25)',
+            'rgba(253,174,97, 0.25)',
+            'rgba(217,239,139, 0.25)',
+            'rgba(254,224,139, 0.25)'
+          ],
+          borderColor: [
+            'rgba(0,104,55, 1)',
+            'rgba(165,0,38, 1)',
+            'rgba(26,152,80, 1)',
+            'rgba(215,48,39, 1)',
+            'rgba(102,189,99, 1)',
+            'rgba(244,109,67, 1)',
+            'rgba(166,217,106, 1)',
+            'rgba(253,174,97, 1)',
+            'rgba(217,239,139, 1)',
+            'rgba(254,224,139, 1)'
+          ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      tooltips: {
+        displayColors: false,
+        callbacks: {
+          afterLabel: function(tooltipItem, data) {
+            var dataset = data['datasets'][0];
+            var percent = Math.round((dataset['data'][tooltipItem['index']] / GesamtMenge) * 100)
+            return '(' + percent + '%)';
+          }
+        },
+      },
+      responsive: false,
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          fontColor: '#FF8C00',
+          boxWidth: 15,
+          fontSize: 15
+        }
+      }
+    }
+  })
+  var L = document.getElementById("lds-hourglass");
+  L.style.display = "none";
 }
