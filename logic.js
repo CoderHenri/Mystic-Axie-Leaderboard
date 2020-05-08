@@ -2,7 +2,6 @@ var NameArray = [];
 
 async function ReadTextFile() {
     NameArray = await AsyncTextReader();
-    console.log(NameArray);
     GetMysticAxies();
 }
 
@@ -69,8 +68,6 @@ async function GetMysticAxies() {
 
   .then(function(data) {
     MysticArray = data;
-    console.log(MysticArray);
-    console.log(MysticArray.data.axies.results.length);
     ArrayConverter(MysticArray);
   });
 }
@@ -159,7 +156,6 @@ async function ProfileNamer(Array) {
       }
       
     }
-  console.log(Array);
   ListMaker(Array);
 }
 
@@ -174,8 +170,6 @@ function ListMaker(Array) {
     }
   }
   RareMysticList.sort((a,b) => b.Mystics - a.Mystics);
-  console.log(MysticList);
-  console.log(RareMysticList);
 
   document.getElementById("MList").innerHTML = '<ol class="LL">' + MysticList.map(function (genesis) {
     return '<li>' + String(genesis["Mystics"]) + " Mystics owned by " + String(genesis["EthOwner"]) + '</li>';
