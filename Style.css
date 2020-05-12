@@ -1,5 +1,5 @@
 #webpage{
-    background-color: #36393E;
+    background-color: #252835;
   }
 
 #FixedBoxFixer {
@@ -11,7 +11,7 @@
   left: 10px;
   font-size: 13px;
   font-family: Arial, Helvetica, sans-serif;
-  color: rgb(255, 255, 255);
+  color: #FF8C00;
 }
 
 #Donation {
@@ -19,14 +19,14 @@
   position: fixed;
   font-size: 13px;
   font-family: Arial, Helvetica, sans-serif;
-  color: rgb(255, 255, 255);
+  color: #FF8C00;
 }
 
 #Headline {
-  font-size: 75px;
+  font-size: 65px;
   font-family: Arial, Helvetica, sans-serif;
-  color: #00008B;
-  text-shadow:
+  color: rgb(255, 255, 255);
+  /* text-shadow:
     -2px -2px 0 #FF8C00,
     0   -2px 0 #FF8C00,
     2px -2px 0 #FF8C00,
@@ -34,7 +34,7 @@
     2px  2px 0 #FF8C00,
     0    2px 0 #FF8C00,
     -2px  2px 0 #FF8C00,
-    -2px  0   0 #FF8C00;
+    -2px  0   0 #FF8C00; */
   text-align: center;
   margin-top: 0px;
 }
@@ -52,18 +52,18 @@
 
   
 .RankingName {
-    font-size: 35px;
+    font-size: 30px;
     font-family: Arial, Helvetica, sans-serif;
-    color: #FF8C00;
+    color: rgb(255, 255, 255);
     text-decoration: underline;
     text-align: center;
 }
 
 
 .ListClass{
-    font-size: 20px;
+    font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
-    color: #FF8C00;
+    color: rgb(255, 255, 255);
     text-align: center;
     margin-top: 0px;
 }
@@ -96,8 +96,8 @@
   height: 0;
   margin: 8px;
   box-sizing: border-box;
-  border: 48px solid #FF8C00;
-  border-color: #FF8C00 transparent #FF8C00 transparent;
+  border: 48px solid rgb(255, 255, 255);
+  border-color: rgb(255, 255, 255) transparent rgb(255, 255, 255) transparent;
   animation: lds-hourglass 1.2s infinite;
 }
 @keyframes lds-hourglass {
